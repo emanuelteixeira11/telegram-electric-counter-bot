@@ -10,9 +10,9 @@ const firebaseDatabase = require('firebase/database');
 // const bot = new TelegramBot(config.telegramToken, { polling: true });
 
 console.log(JSON.stringify(config));
-console.log(`PORT: ${process.env.PORT} | URL: ${process.env.APP_URL}`);
+console.log(`PORT: ${process.env.PORT}`);
 
-const bot = new TelegramBot(config.telegramToken, {
+const bot = new TelegramBot(config.telegram.token, {
     webHook: {
         port: config.telegram.webhook.heroku.port
     }
