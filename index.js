@@ -11,7 +11,7 @@ const firebaseDatabase = require('firebase/database');
 
 console.log(config);
 
-const bot = new TelegramBot(config.telegramToken, {
+/*const bot = new TelegramBot(config.telegramToken, {
     webHook: {
         port: config.telegram.webhook.heroku.port
     }
@@ -21,5 +21,5 @@ bot.setWebHook(config.telegram.webhook.heroku.url);
 
 bot.on('message', function onMessage(msg) {
     bot.sendMessage(msg.chat.id, 'I am alive on Heroku!');
-});
+});*/
 
