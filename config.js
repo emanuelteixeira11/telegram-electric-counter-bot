@@ -6,7 +6,7 @@ module.exports = {
         token: process.env.TELEGRAM_BOT_TOKEN,
         webhook: {
             heroku: {
-                port: pprocess.env.PORT,
+                port: process.env.PORT,
                 appName: process.env.TELEGRAM_BOT_HEROKU_APP_NAME,
                 url: `https://${process.env.TELEGRAM_BOT_HEROKU_APP_NAME}.herokuapp.com/bot${process.env.TELEGRAM_BOT_TOKEN}`
             }
