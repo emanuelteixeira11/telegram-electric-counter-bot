@@ -9,7 +9,7 @@ const firebaseDatabase = require('firebase/database');
 // const db = app.database();
 // const bot = new TelegramBot(config.telegramToken, { polling: true });
 
-console.log(config.telegram);
+console.log(JSON.stringify(config));
 
 const bot = new TelegramBot(config.telegramToken, {
     webHook: {
