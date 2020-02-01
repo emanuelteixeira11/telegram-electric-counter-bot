@@ -1,0 +1,23 @@
+{
+  "name": "telegram-electric-counter-bot",
+  "version": "1.0.0",
+  "description": "Telegram bot to send electric counter updated",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Emanuel Teixeira",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "cheerio": "^1.0.0-rc.3",
+    "dotenv": "^8.2.0",
+    "firebase": "^7.7.0",
+    "firebase-admin": "^8.9.2",
+    "node-telegram-bot-api": "^0.40.0",
+    "pm2": "^4.2.3"
+  },
+  "engines": {
+    "node": "13.x"
+  }
+}
