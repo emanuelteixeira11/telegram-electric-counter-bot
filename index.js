@@ -194,6 +194,10 @@ const addPositionHandler = (msg) => {
                                     totalAmount: totalAmount,
                                     totalKWh: diff,
                                     createdAt: endDate,
+                                    createdBy: {
+                                        userId: sent.chat.id,
+                                        userName: sent.chat.username
+                                    },
                                     previous: apartment.currentPosition.lastUpdate.positionId
                                 }).then(positionKey => {
                                     apartment.currentPosition = {
@@ -206,6 +210,10 @@ const addPositionHandler = (msg) => {
                                         kWh: updatedPosition,
                                     };
                                     apartment.changedAt = endDate;
+                                    apartment.changedBy = {
+                                        userId: sent.chat.id,
+                                        userName: sent.chat.username
+                                    };
 
                                     setApartmentById(guest.apartment, apartment).then(() => {
                                         let textMsg = `*Contagem efetuada com sucesso\\!*\n\n`;
