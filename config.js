@@ -2,6 +2,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 module.exports = {
+    nodeEnv: process.env.NODE_ENV,
     telegram: {
         token: process.env.TELEGRAM_BOT_TOKEN,
         webhook: {
@@ -21,5 +22,16 @@ module.exports = {
         messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
         appId: process.env.FIREBASE_APP_ID,
         measurementId: process.env.FIREBASE_MEASUREMENT_ID
+    },
+    email: {
+        from: {
+            email: process.env.EMAIL_FROM,
+            name: process.env.EMAIL_NAME
+        },
+        replyTo: {
+            email: process.env.EMAIL_REPLY_TO,
+            name: process.env.EMAIL_REPLY_TO_NAME
+        },
+        cc: process.env.EMAIL_CC
     }
 };
