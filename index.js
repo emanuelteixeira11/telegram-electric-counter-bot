@@ -327,7 +327,11 @@ const sendEmailHandler = (msg) => {
                 guest.apartment = apartment;
                 guest.toReport = toReport;
                 guest.lastReported = lastReported;
-                email.sendMonthlyPositionEmail(guest);
+                email.sendMonthlyPositionEmail(guest).then((resp) => {
+                    bot.sendMessage(msg.message.chat.id, 'Email enviado com sucesso 😎', {parse_mode: 'Markdown', reply_to_message_id: msg.message.message_id});
+                }).catch(error => {
+                    bot.sendMessage(msg.message.chat.id, 'Erro ao enviar o email 🤕', {parse_mode: 'Markdown', reply_to_message_id: msg.message.message_id});
+                });
             });
         });
     }

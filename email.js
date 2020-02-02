@@ -39,7 +39,7 @@ module.exports.sendMonthlyPositionEmail = (guest) => {
         subject: subject,
         html: bodyHTML
     }
-    sendEmail(email);
+    return sendEmail(email);
 };
 
 formatTable = (positions) => {
@@ -51,11 +51,15 @@ formatTable = (positions) => {
 };
 
 sendEmail = (email) => {
-    email.from = config.email.from;
-    email.cc = config.email.cc;
-    //email.replyTo = config.email.replyTo;
-    sgMail.send(email).then((resp) => {
-    }).catch(error => {
-        console.log(error);
-    });;
+    let promise = new Promise((resolve, reject) => {
+        email.from = config.email.from;
+        email.cc = config.email.cc;
+
+        sgMail.send(email).then((resp) => {
+            resolve(resp);
+        }).catch(error => {
+            reject(error);
+        });;
+    });
+    return promise;
 };
