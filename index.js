@@ -9,7 +9,7 @@ const moment = require('moment');
 
 const initBot = () => {
     let bot;
-    if (config.nodeEnv === 'production') {
+    if (config.nodeEnv === 'prod') {
         bot = new TelegramBot(config.telegram.token, {
             webHook: {
                 port: config.telegram.webhook.heroku.port
