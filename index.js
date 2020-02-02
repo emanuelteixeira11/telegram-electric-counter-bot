@@ -31,6 +31,32 @@ const getApartments = () => {
     return firebaseDB.ref('apartments').once('value');
 }
 
+const isAuthorized = (userId) => {
+    let promise = new Promise((resolve, reject) => {
+        firebaseDB.ref(`users/${userId}`).once('value').then((isAuthorized) => {
+            resolve(isAuthorized.val() || {isAuthorized: false});
+        }).catch((error) => {
+            reject(error);
+        });
+    });
+    return promise;
+}
+
+const authorizeUser = (userId, userName) => {
+    let promise = new Promise((resolve, reject) => {
+        firebaseDB.ref(`users/${userId}`).set({
+            userName: userName,
+            isAuthorized: true,
+            activationDate: moment.now()
+        }).then(() => {
+            resolve();
+        }).catch((error) => {
+            reject(error);
+        });
+    });
+    return promise;
+}
+
 const getApartmentById = (apartmentId) => {
     let promise = new Promise((resolve, reject) => {
         firebaseDB.ref(`apartments/${apartmentId}`).once('value').then((apartmentData) => {
@@ -315,37 +341,61 @@ const defaultHandler = (msg) => {
 }
 
 bot.on('message', function onMessage(msg) {
-    if (msg.hasOwnProperty('reply_to_message')) {
-        return;
-    }
-    bot.sendMessage(
-        msg.chat.id,
-        'Olá\\. Sou o teu assistente para a gestão do teu condominio particular\\! Escolhe uma das seguintes opções\\:',
-        {
-            parse_mode: "MarkdownV2", disable_notification: true, reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: 'Ver informações dos Apartamentos',
-                            callback_data: '/apartments_info'
-                        }
-                    ],
-                    [
-                        {
-                            text: 'Adicionar nova contagem',
-                            callback_data: '/add_position'
 
-                        }
-                    ],
-                    [
-                        {
-                            text: 'Alterar uma contagem',
-                            callback_data: '/update_position'
-                        }
-                    ]
-                ]
+    isAuthorized(msg.chat.id).then((user) => {
+        if (user.isAuthorized || msg.hasOwnProperty('reply_to_message')) {
+            if (msg.hasOwnProperty('reply_to_message')) {
+                return;
             }
-        });
+            bot.sendMessage(
+                msg.chat.id,
+                'Olá\\. Sou o teu assistente para a gestão do teu condominio particular\\! Escolhe uma das seguintes opções\\:',
+                {
+                    parse_mode: "MarkdownV2", reply_markup: {
+                        inline_keyboard: [
+                            [
+                                {
+                                    text: 'Ver informações dos Apartamentos 🔎',
+                                    callback_data: '/apartments_info'
+                                }
+                            ],
+                            [
+                                {
+                                    text: 'Adicionar nova contagem 📝',
+                                    callback_data: '/add_position'
+
+                                }
+                            ],
+                            [
+                                {
+                                    text: 'Alterar uma contagem ❌',
+                                    callback_data: '/update_position'
+                                }
+                            ]
+                        ]
+                    }
+                });
+        }
+        else {
+            bot.sendMessage(msg.chat.id, '*Não está autorizado a aceder a este bot*\\!\n\nEnvia o codigo de acesso\\:\n', { 
+                parse_mode: "MarkdownV2",
+                reply_markup: {
+                    force_reply: true
+                }
+            }).then(sent => {
+                bot.onReplyToMessage(sent.chat.id, sent.message_id, (msg) => {
+                    if(msg.text == config.botSecretCode){
+                        authorizeUser(msg.chat.id, msg.chat.username).then(() => {
+                            bot.sendMessage(msg.chat.id, 'Código correto 🤗 \n\n Utiliza o comando *\\/ver* para visualizar todas as opções', {parse_mode: "MarkdownV2", reply_to_message_id: msg.message_id});
+                        });
+                    }
+                    else{
+                        bot.sendMessage(msg.chat.id, 'Código errado 😳', {parse_mode: "MarkdownV2", reply_to_message_id: msg.message_id});
+                    }
+                });
+            });
+        }
+    });
 });
 
 bot.on("callback_query", (callbackQuery) => {

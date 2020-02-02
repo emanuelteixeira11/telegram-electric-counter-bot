@@ -33,5 +33,6 @@ module.exports = {
             name: process.env.EMAIL_REPLY_TO_NAME
         },
         cc: process.env.EMAIL_CC
-    }
+    },
+    botSecretCode: process.env.BOT_SECRET_CODE
 };
