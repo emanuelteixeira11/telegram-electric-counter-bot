@@ -276,7 +276,6 @@ const addPositionHandler = (msg) => {
                                 bot.sendMessage(sent.chat.id, escapeMarkDown("A contagem enviada é inferior à ultima contagem efetuada! Repete o processo de novo."), {
                                     parse_mode: "MarkdownV2"
                                 });
-                                addPositionHandler(msg);
                             }
                         }
                         else {
