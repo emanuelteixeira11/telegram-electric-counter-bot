@@ -34,7 +34,7 @@ const getApartments = () => {
 const isAuthorized = (userId) => {
     let promise = new Promise((resolve, reject) => {
         firebaseDB.ref(`users/${userId}`).once('value').then((isAuthorized) => {
-            resolve(isAuthorized.val() || {isAuthorized: false});
+            resolve(isAuthorized.val() || { isAuthorized: false });
         }).catch((error) => {
             reject(error);
         });
@@ -45,7 +45,7 @@ const isAuthorized = (userId) => {
 const authorizeUser = (userId, userName) => {
     let promise = new Promise((resolve, reject) => {
         firebaseDB.ref(`users/${userId}`).set({
-            userName: userName,
+            userName: userName || 'null',
             isAuthorized: true,
             activationDate: moment.now()
         }).then(() => {
@@ -272,6 +272,11 @@ const addPositionHandler = (msg) => {
                                 });
 
                             }
+                            else {
+                                bot.sendMessage(sent.chat.id, "A contagem enviada é inferior à ultima contagem efetuada! Repete o processo de novo.", {
+                                    parse_mode: "MarkdownV2"
+                                });
+                            }
                         }
                         else {
                             console.log('erro');
@@ -328,9 +333,9 @@ const sendEmailHandler = (msg) => {
                 guest.toReport = toReport;
                 guest.lastReported = lastReported;
                 email.sendMonthlyPositionEmail(guest).then((resp) => {
-                    bot.sendMessage(msg.message.chat.id, 'Email enviado com sucesso 😎', {parse_mode: 'Markdown', reply_to_message_id: msg.message.message_id});
+                    bot.sendMessage(msg.message.chat.id, 'Email enviado com sucesso 😎', { parse_mode: 'Markdown', reply_to_message_id: msg.message.message_id });
                 }).catch(error => {
-                    bot.sendMessage(msg.message.chat.id, 'Erro ao enviar o email 🤕', {parse_mode: 'Markdown', reply_to_message_id: msg.message.message_id});
+                    bot.sendMessage(msg.message.chat.id, 'Erro ao enviar o email 🤕', { parse_mode: 'Markdown', reply_to_message_id: msg.message.message_id });
                 });
             });
         });
@@ -369,32 +374,33 @@ bot.on('message', function onMessage(msg) {
                                     callback_data: '/add_position'
 
                                 }
-                            ],
+                            ]
+                            /*,
                             [
                                 {
                                     text: 'Alterar uma contagem ❌',
                                     callback_data: '/update_position'
                                 }
-                            ]
+                            ]*/
                         ]
                     }
                 });
         }
         else {
-            bot.sendMessage(msg.chat.id, '*Não está autorizado a aceder a este bot*\\!\n\nEnvia o codigo de acesso\\:\n', { 
+            bot.sendMessage(msg.chat.id, '*Não está autorizado a aceder a este bot*\\!\n\nEnvia o codigo de acesso\\:\n', {
                 parse_mode: "MarkdownV2",
                 reply_markup: {
                     force_reply: true
                 }
             }).then(sent => {
                 bot.onReplyToMessage(sent.chat.id, sent.message_id, (msg) => {
-                    if(msg.text == config.botSecretCode){
+                    if (msg.text == config.botSecretCode) {
                         authorizeUser(msg.chat.id, msg.chat.username).then(() => {
-                            bot.sendMessage(msg.chat.id, 'Código correto 🤗 \n\n Utiliza o comando *\\/ver* para visualizar todas as opções', {parse_mode: "MarkdownV2", reply_to_message_id: msg.message_id});
+                            bot.sendMessage(msg.chat.id, 'Código correto 🤗 \n\n Utiliza o comando *\\/ver* para visualizar todas as opções', { parse_mode: "MarkdownV2", reply_to_message_id: msg.message_id });
                         });
                     }
-                    else{
-                        bot.sendMessage(msg.chat.id, 'Código errado 😳', {parse_mode: "MarkdownV2", reply_to_message_id: msg.message_id});
+                    else {
+                        bot.sendMessage(msg.chat.id, 'Código errado 😳', { parse_mode: "MarkdownV2", reply_to_message_id: msg.message_id });
                     }
                 });
             });
