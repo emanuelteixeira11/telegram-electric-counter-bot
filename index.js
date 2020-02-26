@@ -279,7 +279,9 @@ const addPositionHandler = (msg) => {
                             }
                         }
                         else {
-                            console.log('erro');
+                            bot.sendMessage(sent.chat.id, escapeMarkDown("A contagem enviada não é um número! Repete o processo de novo."), {
+                                parse_mode: "MarkdownV2"
+                            });
                         }
                     });
                 });
