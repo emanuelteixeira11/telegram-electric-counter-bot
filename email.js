@@ -35,7 +35,7 @@ module.exports.sendMonthlyPositionEmail = (guest) => {
     `;
 
     let email = {
-        to: guest.email.join(';'),
+        to: guest.email,
         subject: subject,
         html: bodyHTML
     }
