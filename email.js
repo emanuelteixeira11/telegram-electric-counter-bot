@@ -34,8 +34,12 @@ module.exports.sendMonthlyPositionEmail = (guest) => {
     </style>
     `;
 
+    let toList = [];
+    guest.email.forEach(to => {
+        toList.push({email: to});
+    });
     let email = {
-        to: guest.email,
+        to: toList,
         subject: subject,
         html: bodyHTML
     }
