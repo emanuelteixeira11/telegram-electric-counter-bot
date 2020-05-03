@@ -209,7 +209,7 @@ const addPositionHandler = (msg) => {
                         if (!isNaN(updatedPosition)) {
                             if (updatedPosition > apartment.currentPosition.kWh) {
                                 let diff = updatedPosition - apartment.currentPosition.kWh;
-                                let totalAmount = diff * apartment.price;
+                                let totalAmount = Math.round(diff * apartment.price).toFixed(2);
                                 let startDate = apartment.changedAt;
                                 let endDate = moment.now();
 
