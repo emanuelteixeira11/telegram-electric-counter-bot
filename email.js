@@ -34,8 +34,6 @@ module.exports.sendMonthlyPositionEmail = (guest) => {
     </style>
     `;
 
-    console.log(JSON.stringify(guest));
-
     let email = {
         to: guest.email,
         subject: subject,
@@ -56,6 +54,8 @@ sendEmail = (email) => {
     let promise = new Promise((resolve, reject) => {
         email.from = config.email.from;
         email.cc = config.email.cc;
+
+        console.log(`Sendin email: ${JSON.stringify(email)}`);
 
         sgMail.send(email).then((resp) => {
             resolve(resp);
