@@ -34,12 +34,19 @@ module.exports.sendMonthlyPositionEmail = (guest) => {
     </style>
     `;
 
-    let email = {
-        to: guest.email,
-        subject: subject,
-        html: bodyHTML
-    }
-    return sendEmail(email);
+    
+    let promises = [];
+    guest.email.forEach(guestEmail => {
+        let email = {
+            to: guestEmail,
+            subject: subject,
+            html: bodyHTML
+        }
+
+        promises.push(sendEmail(email));
+    });
+
+    return Promise.all(promises);
 };
 
 formatTable = (positions) => {
@@ -55,7 +62,7 @@ sendEmail = (email) => {
         email.from = config.email.from;
         email.cc = config.email.cc;
 
-        console.log(`Sendin email: ${JSON.stringify(email)}`);
+        console.log(`Sending email: ${JSON.stringify(email)}`);
 
         sgMail.send(email).then((resp) => {
             resolve(resp);
