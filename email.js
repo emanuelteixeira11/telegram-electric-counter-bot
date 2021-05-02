@@ -34,8 +34,10 @@ module.exports.sendMonthlyPositionEmail = (guest) => {
     </style>
     `;
 
+    console.log(JSON.stringify(guest));
+
     let email = {
-        to: guest.email.join(';'),
+        to: guest.email,
         subject: subject,
         html: bodyHTML
     }
