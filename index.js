@@ -336,7 +336,7 @@ const sendEmailHandler = (msg) => {
                 guest.toReport = toReport;
                 guest.lastReported = lastReported;
                 email.sendMonthlyPositionEmail(guest).then((resp) => {
-                    console.log(`email sent sucessfully: ${JSON.stringify(resp)}`);
+                    console.log(`email sent sucessfully!`);
                     bot.sendMessage(msg.message.chat.id, 'Email enviado com sucesso 😎', { parse_mode: 'Markdown', reply_to_message_id: msg.message.message_id });
                 }).catch(error => {
                     console.error(`error sending email: ${JSON.stringify(error)}`);
