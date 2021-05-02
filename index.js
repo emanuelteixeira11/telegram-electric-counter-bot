@@ -124,6 +124,7 @@ const getLatestGuestPositionById = (guestId, nMaxPos) => {
                     return pos;
                 })
                 .splice(0, nMaxPos);
+            guest.id = guestId;
             guest.positions = positions;
             resolve(guest);
         }).catch(error => reject(error));
@@ -354,9 +355,9 @@ const sendEmailHandler = (msg) => {
                 });
 
                 Promise.all(promises).then(guests => {
-                    console.log(`Resending email: ${JSON.stringify(guests)}`);
                     guests.forEach(guest => {
                         let position = guest.positions[0].id;
+                        console.log(`Resending email: ${JSON.stringify(guests)} with position ${position}`);
                         inline_keyboard.push([{
                             text: guest.name,
                             callback_data: `/send_email guest:${guest.id} position:${position}`
