@@ -342,6 +342,28 @@ const sendEmailHandler = (msg) => {
                 });
             });
         });
+    } else if(msg.data.match(/\/resend\_email/) !== null){
+        bot.answerCallbackQuery(msg.id)
+        .then(() => {
+            let inline_keyboard = [];
+            getActiveGuestsByApartment().then((guestsMap => {
+                guestsMap.forEach((guest) => {
+                    inline_keyboard.push([{
+                        text: guest.name,
+                        callback_data: `/resend_email guest:${guest.id}`
+                    }]);
+                });
+
+                bot.sendMessage(msg.from.id, 'Escolhe o inquilino para o qual queres reenviar o ultimo email\\:', {
+                    parse_mode: "MarkdownV2",
+                    reply_markup: {
+                        inline_keyboard: inline_keyboard
+                    }
+                });
+            }));
+        }).catch((error) => {
+            console.log("erro");
+        });
     }
 }
 
@@ -375,6 +397,13 @@ bot.on('message', function onMessage(msg) {
                                 {
                                     text: 'Adicionar nova contagem 📝',
                                     callback_data: '/add_position'
+
+                                }
+                            ],
+                            [
+                                {
+                                    text: 'Reenviar email 📝',
+                                    callback_data: '/resend_email'
 
                                 }
                             ]
@@ -427,6 +456,9 @@ bot.on("callback_query", (callbackQuery) => {
         callBackHandler = addPositionHandler;
     }
     else if (callbackQuery.data.startsWith('/send_email')) {
+        callBackHandler = sendEmailHandler;
+    }
+    else if (callbackQuery.data.startsWith('/resend_email')) {
         callBackHandler = sendEmailHandler;
     }
     else {
