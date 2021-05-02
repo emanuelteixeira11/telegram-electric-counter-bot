@@ -357,7 +357,6 @@ const sendEmailHandler = (msg) => {
                 Promise.all(promises).then(guests => {
                     guests.forEach(guest => {
                         let position = guest.positions[0].id;
-                        console.log(`Resending email: ${JSON.stringify(guests)} with position ${position}`);
                         inline_keyboard.push([{
                             text: guest.name,
                             callback_data: `/send_email guest:${guest.id} position:${position}`
@@ -415,7 +414,7 @@ bot.on('message', function onMessage(msg) {
                             ],
                             [
                                 {
-                                    text: 'Reenviar email 📝',
+                                    text: 'Reenviar email 📨',
                                     callback_data: '/resend_email'
 
                                 }
