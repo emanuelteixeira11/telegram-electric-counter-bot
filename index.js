@@ -346,20 +346,32 @@ const sendEmailHandler = (msg) => {
         bot.answerCallbackQuery(msg.id)
         .then(() => {
             let inline_keyboard = [];
+            let promises = [];
+
             getActiveGuestsByApartment().then((guestsMap => {
                 guestsMap.forEach((guest) => {
-                    inline_keyboard.push([{
-                        text: guest.name,
-                        callback_data: `/resend_email guest:${guest.id}`
-                    }]);
+                    promises.push(getLatestGuestPositionById(guest.id, 1));                
                 });
 
-                bot.sendMessage(msg.from.id, 'Escolhe o inquilino para o qual queres reenviar o ultimo email\\:', {
-                    parse_mode: "MarkdownV2",
-                    reply_markup: {
-                        inline_keyboard: inline_keyboard
-                    }
+                Promise.all(promises).then(guests => {
+
+                    guests.forEach(guest => {
+                        let position = guests.positions[0].id;
+                        inline_keyboard.push([{
+                            text: guest.name,
+                            callback_data: `/send_email guest:${guest.id} position:${position}`
+                        }]);
+                    })
+
+                    bot.sendMessage(msg.from.id, 'Escolhe o inquilino para o qual queres reenviar o ultimo email\\:', {
+                        parse_mode: "MarkdownV2",
+                        reply_markup: {
+                            inline_keyboard: inline_keyboard
+                        }
+                    });
                 });
+
+                
             }));
         }).catch((error) => {
             console.log("erro");
