@@ -62,7 +62,7 @@ sendEmail = (email) => {
         email.from = config.email.from;
         email.cc = config.email.cc;
 
-        console.log(`Sending email: ${JSON.stringify(email)}`);
+        console.debug(`Sending email to: ${email.to}`);
 
         sgMail.send(email).then((resp) => {
             resolve(resp);
