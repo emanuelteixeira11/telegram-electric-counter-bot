@@ -354,9 +354,9 @@ const sendEmailHandler = (msg) => {
                 });
 
                 Promise.all(promises).then(guests => {
-
+                    console.log(`Resending email: ${JSON.stringify(guests)}`);
                     guests.forEach(guest => {
-                        let position = guests.positions[0].id;
+                        let position = guest.positions[0].id;
                         inline_keyboard.push([{
                             text: guest.name,
                             callback_data: `/send_email guest:${guest.id} position:${position}`
