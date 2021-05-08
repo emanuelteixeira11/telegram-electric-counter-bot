@@ -340,7 +340,7 @@ const addWaterPositionHandler = (msg) => {
 
             getApartmentById(guest.apartment).then(apartment => {
                 let textMsg = `Enviar a contagem de agua para o *${apartment.description}* do *${guest.name}*\\:\n`;
-                textMsg += `Contagem atual: ${apartment.currentPosition.m3} m3\n\n`;
+                textMsg += `Contagem atual: ${apartment.currentWaterPosition.m3} m3\n\n`;
                 bot.sendMessage(msg.from.id, textMsg, {
                     parse_mode: "MarkdownV2",
                     reply_markup: {
@@ -350,15 +350,15 @@ const addWaterPositionHandler = (msg) => {
                     bot.onReplyToMessage(sent.chat.id, sent.message_id, (msg) => {
                         let updatedPosition = Number(msg.text);
                         if (!isNaN(updatedPosition)) {
-                            if (updatedPosition > apartment.currentPosition.m3) {
-                                let diff = updatedPosition - apartment.currentPosition.m3;
+                            if (updatedPosition > apartment.currentWaterPosition.m3) {
+                                let diff = updatedPosition - apartment.currentWaterPosition.m3;
                                 let totalAmount = Math.round(diff * apartment.price.m3).toFixed(2);
                                 let startDate = apartment.changedAt;
                                 let endDate = moment.now();
 
                                 pushGuestWaterPosition(guestId, {
                                     currentM3Position: updatedPosition,
-                                    lastM3Position: apartment.currentPosition.m3,
+                                    lastPosition: apartment.currentWaterPosition.m3,
                                     price: apartment.price.m3,
                                     totalAmount: totalAmount,
                                     totalKWh: diff,
@@ -367,7 +367,7 @@ const addWaterPositionHandler = (msg) => {
                                         userId: sent.chat.id,
                                         userName: sent.chat.username
                                     },
-                                    previous: apartment.currentPosition.lastUpdate.water.positionId
+                                    previous: apartment.currentWaterPosition.lastUpdate.positionId
                                 }).then(positionKey => {
                                     apartment.currentPosition.lastUpdate = {
                                         water : {
