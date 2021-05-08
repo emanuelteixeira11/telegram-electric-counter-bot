@@ -145,6 +145,19 @@ const pushGuestPosition = (guestId, position) => {
     return promise;
 }
 
+const pushGuestWaterPosition = (guestId, position) => {
+    let positionKey = moment.now();
+    let promise = new Promise((resolve, reject) => {
+        firebaseDB.ref(`guests/${guestId}/positions_water/${positionKey}`).set(position).
+            then(() => {
+                resolve(positionKey);
+            }).catch((error) => {
+                reject(error);
+            });
+    });
+    return promise;
+}
+
 const bot = initBot();
 const firebaseDB = initFirebaseDB();
 
@@ -315,6 +328,136 @@ const addPositionHandler = (msg) => {
     }
 }
 
+const addWaterPositionHandler = (msg) => {
+
+    if (msg.data.match(/\/add\_water\_position guest\:/) !== null) {
+        let startIndex = msg.data.indexOf('guest:') + 6;
+        let endIndex = msg.data.indexOf(' ', startIndex);
+        endIndex = endIndex < 0 ? msg.data.length : endIndex;
+        let guestId = msg.data.substring(startIndex, endIndex);
+
+        getGuestById(guestId).then(guest => {
+
+            getApartmentById(guest.apartment).then(apartment => {
+                let textMsg = `Enviar a contagem de agua para o *${apartment.description}* do *${guest.name}*\\:\n`;
+                textMsg += `Contagem atual: ${apartment.currentPosition.m3} m3\n\n`;
+                bot.sendMessage(msg.from.id, textMsg, {
+                    parse_mode: "MarkdownV2",
+                    reply_markup: {
+                        force_reply: true
+                    }
+                }).then(sent => {
+                    bot.onReplyToMessage(sent.chat.id, sent.message_id, (msg) => {
+                        let updatedPosition = Number(msg.text);
+                        if (!isNaN(updatedPosition)) {
+                            if (updatedPosition > apartment.currentPosition.m3) {
+                                let diff = updatedPosition - apartment.currentPosition.m3;
+                                let totalAmount = Math.round(diff * apartment.price.m3).toFixed(2);
+                                let startDate = apartment.changedAt;
+                                let endDate = moment.now();
+
+                                pushGuestWaterPosition(guestId, {
+                                    currentM3Position: updatedPosition,
+                                    lastM3Position: apartment.currentPosition.m3,
+                                    price: apartment.price.m3,
+                                    totalAmount: totalAmount,
+                                    totalKWh: diff,
+                                    createdAt: endDate,
+                                    createdBy: {
+                                        userId: sent.chat.id,
+                                        userName: sent.chat.username
+                                    },
+                                    previous: apartment.currentPosition.lastUpdate.water.positionId
+                                }).then(positionKey => {
+                                    apartment.currentPosition.lastUpdate = {
+                                        water : {
+                                            guestId: guestId,
+                                            positionId: positionKey,
+                                            amount: totalAmount,
+                                            m3: diff,
+                                            totalM3: updatedPosition
+                                        }
+                                    };
+                                    apartment.changedAt = endDate;
+                                    apartment.changedBy = {
+                                        userId: sent.chat.id,
+                                        userName: sent.chat.username,
+                                        action: 'new_entry_water'
+                                    };
+
+                                    setApartmentById(guest.apartment, apartment).then(() => {
+                                        let textMsg = `*Contagem efetuada com sucesso\\!*\n\n`;
+                                        textMsg += `_${apartment.description}_\n`;
+                                        textMsg += `_${guest.name}_\n`;
+                                        textMsg += `_De ${escapeMarkDown(moment(startDate).format('YYYY-MM-DD'))} a ${escapeMarkDown(moment(endDate).format('YYYY-MM-DD'))}_\n\n`;
+                                        textMsg += `M3 : ${diff} m3\n`;
+                                        textMsg += `Total a pagar : ${escapeMarkDown(totalAmount.toString())} €\n\n`;
+                                        textMsg += `*Enviar email\\?*\n\n`;
+
+                                        bot.sendMessage(sent.chat.id, textMsg, {
+                                            parse_mode: "MarkdownV2",
+                                            reply_to_message_id: msg.message_id,
+                                            reply_markup: {
+                                                inline_keyboard: [
+                                                    [
+                                                        {
+                                                            text: 'sim 👌',
+                                                            callback_data: `/send_email guest:${guestId} position:${positionKey} type:water`
+                                                        },
+                                                        {
+                                                            text: 'não 👎',
+                                                            callback_data: "/discard"
+                                                        }
+                                                    ]
+                                                ]
+                                            }
+                                        });
+                                    });
+                                });
+
+                            }
+                            else {
+                                bot.sendMessage(sent.chat.id, escapeMarkDown("A contagem enviada é inferior à ultima contagem efetuada! Repete o processo de novo."), {
+                                    parse_mode: "MarkdownV2"
+                                });
+                            }
+                        }
+                        else {
+                            bot.sendMessage(sent.chat.id, escapeMarkDown("A contagem enviada não é um número! Repete o processo de novo."), {
+                                parse_mode: "MarkdownV2"
+                            });
+                        }
+                    });
+                });
+
+            });
+        });
+    }
+    else {
+        bot.answerCallbackQuery(msg.id)
+            .then(() => {
+                let inline_keyboard = [];
+                getActiveGuestsByApartment().then((guestsMap => {
+                    guestsMap.forEach((guest) => {
+                        inline_keyboard.push([{
+                            text: guest.name,
+                            callback_data: `/add_water_position guest:${guest.id}`
+                        }]);
+                    });
+
+                    bot.sendMessage(msg.from.id, 'Escolhe o inquilino do qual queres adicionar uma contagem\\:', {
+                        parse_mode: "MarkdownV2",
+                        reply_markup: {
+                            inline_keyboard: inline_keyboard
+                        }
+                    });
+                }));
+            }).catch((error) => {
+                console.log("erro");
+            });
+    }
+}
+
 const sendEmailHandler = (msg) => {
 
     if (msg.data.match(/\/send\_email guest\:(.+) position\:(.+)/) !== null) {
@@ -407,8 +550,15 @@ bot.on('message', function onMessage(msg) {
                             ],
                             [
                                 {
-                                    text: 'Adicionar nova contagem 📝',
+                                    text: 'Adicionar nova contagem de Luz 📝',
                                     callback_data: '/add_position'
+
+                                }
+                            ],
+                            [
+                                {
+                                    text: 'Adicionar nova contagem de Agua 📝',
+                                    callback_data: '/add_water_position'
 
                                 }
                             ],
@@ -466,6 +616,9 @@ bot.on("callback_query", (callbackQuery) => {
     }
     else if (callbackQuery.data.startsWith('/add_position')) {
         callBackHandler = addPositionHandler;
+    }
+    else if (callbackQuery.data.startsWith('/add_water_position')) {
+        callBackHandler = addWaterPositionHandler;
     }
     else if (callbackQuery.data.startsWith('/send_email')) {
         callBackHandler = sendEmailHandler;
