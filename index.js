@@ -117,8 +117,6 @@ const getLatestGuestPositionById = (guestId, nMaxPos) => {
     let promise = new Promise((resolve, reject) => {
         getGuestById(guestId).then(guest => {
             guest.id = guestId;
-            guest.positions = [];
-            guest.positionsWater = [];
             if(guest.positions != undefined) {
                 let positions = Object.keys(guest.positions)
                 .sort((a, b) => guest.positions[b].createdAt - guest.positions[a].createdAt)
@@ -129,6 +127,8 @@ const getLatestGuestPositionById = (guestId, nMaxPos) => {
                 })
                 .splice(0, nMaxPos);
                 guest.positions = positions;
+            } else {
+                guest.positions = [];
             }
             if(guest.positions_water !== undefined) {
                 let positionsWater = Object.keys(guest.positions_water)
@@ -140,7 +140,9 @@ const getLatestGuestPositionById = (guestId, nMaxPos) => {
                 })
                 .splice(0, nMaxPos);
                 guest.positionsWater = positionsWater;
-            } 
+            } else {
+                guest.positionsWater = [];
+            }
             resolve(guest);
         }).catch(error => reject(error));
     });
