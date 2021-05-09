@@ -124,8 +124,17 @@ const getLatestGuestPositionById = (guestId, nMaxPos) => {
                     return pos;
                 })
                 .splice(0, nMaxPos);
+            let positionsWater = Object.keys(guest.positions_water)
+                .sort((a, b) => guest.positions_water[b].createdAt - guest.positions_water[a].createdAt)
+                .map(key => {
+                    let pos = guest.positions_water[key]
+                    pos.id = key;
+                    return pos;
+                })
+                .splice(0, nMaxPos);
             guest.id = guestId;
             guest.positions = positions;
+            guest.positionsWater = positionsWater;
             resolve(guest);
         }).catch(error => reject(error));
     });
@@ -357,11 +366,11 @@ const addWaterPositionHandler = (msg) => {
                                 let endDate = moment.now();
 
                                 pushGuestWaterPosition(guestId, {
-                                    currentM3Position: updatedPosition,
+                                    currentPosition: updatedPosition,
                                     lastPosition: apartment.currentWaterPosition.m3,
                                     price: apartment.price.m3,
                                     totalAmount: totalAmount,
-                                    totalKWh: diff,
+                                    total: diff,
                                     createdAt: endDate,
                                     createdBy: {
                                         userId: sent.chat.id,
@@ -460,7 +469,7 @@ const addWaterPositionHandler = (msg) => {
 
 const sendEmailHandler = (msg) => {
 
-    if (msg.data.match(/\/send\_email guest\:(.+) position\:(.+)/) !== null) {
+    if (msg.data.match(/\/send\_email guest\:(.+) position\:(.+) type\:(.+)/) !== null) {
         let startIndex = msg.data.indexOf('guest:') + 6;
         let endIndex = msg.data.indexOf(' ', startIndex);
         endIndex = endIndex < 0 ? msg.data.length : endIndex;
@@ -471,20 +480,40 @@ const sendEmailHandler = (msg) => {
         endIndex = endIndex < 0 ? msg.data.length : endIndex;
         let positionId = msg.data.substring(startIndex, endIndex);
 
+        startIndex = msg.data.indexOf('type:', endIndex) + 5;
+        endIndex = msg.data.indexOf(' ', startIndex);
+        endIndex = endIndex < 0 ? msg.data.length : endIndex;
+        let type = msg.data.substring(startIndex, endIndex);
+
         getLatestGuestPositionById(guestId, 10).then((guest) => {
             getApartmentById(guest.apartment).then((apartment) => {
-                let toReport = guest.positions.find(pos => pos.id == positionId);
-                let lastReported = guest.positions.find(pos => pos.id == toReport.previous);
-                guest.apartment = apartment;
-                guest.toReport = toReport;
-                guest.lastReported = lastReported;
-                email.sendMonthlyPositionEmail(guest).then((resp) => {
-                    console.log(`email sent sucessfully!`);
-                    bot.sendMessage(msg.message.chat.id, 'Email enviado com sucesso 😎', { parse_mode: 'Markdown', reply_to_message_id: msg.message.message_id });
-                }).catch(error => {
-                    console.error(`error sending email: ${JSON.stringify(error)}`);
-                    bot.sendMessage(msg.message.chat.id, 'Erro ao enviar o email 🤕', { parse_mode: 'Markdown', reply_to_message_id: msg.message.message_id });
-                });
+                if(type === 'electricity') {
+                    let toReport = guest.positions.find(pos => pos.id == positionId);
+                    let lastReported = guest.positions.find(pos => pos.id == toReport.previous);
+                    guest.apartment = apartment;
+                    guest.toReport = toReport;
+                    guest.lastReported = lastReported;
+                    email.sendMonthlyPositionEmail(guest, type).then((resp) => {
+                        console.log(`email sent sucessfully!`);
+                        bot.sendMessage(msg.message.chat.id, 'Email enviado com sucesso 😎', { parse_mode: 'Markdown', reply_to_message_id: msg.message.message_id });
+                    }).catch(error => {
+                        console.error(`error sending email: ${JSON.stringify(error)}`);
+                        bot.sendMessage(msg.message.chat.id, 'Erro ao enviar o email 🤕', { parse_mode: 'Markdown', reply_to_message_id: msg.message.message_id });
+                    });
+                } else if(type === 'water') {
+                    let toReport = guest.positionsWater.find(pos => pos.id == positionId);
+                    let lastReported = guest.positionsWater.find(pos => pos.id == toReport.previous);
+                    guest.apartment = apartment;
+                    guest.toReport = toReport;
+                    guest.lastReported = lastReported;
+                    email.sendMonthlyPositionEmail(guest, type).then((resp) => {
+                        console.log(`email sent sucessfully!`);
+                        bot.sendMessage(msg.message.chat.id, 'Email enviado com sucesso 😎', { parse_mode: 'Markdown', reply_to_message_id: msg.message.message_id });
+                    }).catch(error => {
+                        console.error(`error sending email: ${JSON.stringify(error)}`);
+                        bot.sendMessage(msg.message.chat.id, 'Erro ao enviar o email 🤕', { parse_mode: 'Markdown', reply_to_message_id: msg.message.message_id });
+                    });
+                }
             });
         });
     } else if(msg.data.match(/\/resend\_email/) !== null){
