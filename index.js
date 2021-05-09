@@ -117,6 +117,8 @@ const getLatestGuestPositionById = (guestId, nMaxPos) => {
     let promise = new Promise((resolve, reject) => {
         getGuestById(guestId).then(guest => {
             guest.id = guestId;
+            guest.positions = [];
+            guest.positionsWater = [];
             if(guest.positions != undefined) {
                 let positions = Object.keys(guest.positions)
                 .sort((a, b) => guest.positions[b].createdAt - guest.positions[a].createdAt)
