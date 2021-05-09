@@ -513,7 +513,6 @@ const sendEmailHandler = (msg) => {
                 } else if(type === 'all') {
                     if(guest.positionsWater !== undefined && guest.positionsWater.length > 0) {
                         let toReport = guest.positionsWater.find(pos => pos.id == positionId);
-                        console.log(JSON.stringify(toReport));
                         queue.push({
                             toReport: toReport,
                             lastReported: guest.positionsWater.find(pos => pos.id == toReport.previous),
@@ -557,11 +556,25 @@ const sendEmailHandler = (msg) => {
 
                 Promise.all(promises).then(guests => {
                     guests.forEach(guest => {
-                        let position = guest.positions[0].id;
-                        inline_keyboard.push([{
-                            text: guest.name,
-                            callback_data: `/send_email guest:${guest.id} position:${position} type:all`
-                        }]);
+                        let aux = [];
+
+                        if(guest.positions.length > 0) {
+                            let position = guest.positions[0].id;
+                            aux.push({
+                                text: `${guest.name} : Luz`,
+                                callback_data: `/send_email guest:${guest.id} position:${position} type:electricity`
+                            })
+                        }
+
+                        if(guest.positionsWater.length > 0) {
+                            let position = guest.positionsWater[0].id;
+                            aux.push({
+                                text: `${guest.name} : Agua`,
+                                callback_data: `/send_email guest:${guest.id} position:${position} type:water`
+                            })
+                        }
+
+                        inline_keyboard.push(aux);
                     })
 
                     bot.sendMessage(msg.from.id, 'Escolhe o inquilino para o qual queres reenviar o ultimo email\\:', {
