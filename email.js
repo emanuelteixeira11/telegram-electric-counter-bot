@@ -5,8 +5,6 @@ moment.locale('pt');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 module.exports.sendMonthlyPositionEmail = (guest, type = 'all') => {
-    let month = moment(guest.toReport.createdAt).format('MMMM');
-
     let payload = undefined;
     if(type === 'electricity') {
         payload = resolveElectricityTemplate(guest);
@@ -29,6 +27,7 @@ module.exports.sendMonthlyPositionEmail = (guest, type = 'all') => {
 };
 
 resolveElectricityTemplate = (guest) => {
+    let month = moment(guest.toReport.createdAt).format('MMMM');
     let subject = `Contagem de Luz - ${guest.name} - ${month}`;
     let bodyHTML = `<p>Boa tarde ${guest.name},</p>
     <p>Segue abaixo a contagem da Luz para o mês de ${month} (de ${moment(guest.lastReported.createdAt).format('YYYY-MM-DD')} a ${moment(guest.toReport.createdAt).format('YYYY-MM-DD')}).</p>
