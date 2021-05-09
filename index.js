@@ -376,7 +376,7 @@ const addWaterPositionHandler = (msg) => {
                                         userId: sent.chat.id,
                                         userName: sent.chat.username
                                     },
-                                    previous: apartment.currentWaterPosition.lastUpdate != undefined ? apartment.currentWaterPosition.lastUpdate.positionId : null
+                                    previous: apartment.currentPosition.lastUpdate.water.positionId
                                 }).then(positionKey => {
                                     apartment.currentPosition.m3 = updatedPosition;
                                     apartment.currentPosition.lastUpdate.water = {
