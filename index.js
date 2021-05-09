@@ -512,8 +512,8 @@ const sendEmailHandler = (msg) => {
                     });
                 } else if(type === 'all') {
                     if(guest.positionsWater !== undefined && guest.positionsWater.length > 0) {
-                        console.log(JSON.stringify(guest));
                         let toReport = guest.positionsWater.find(pos => pos.id == positionId);
+                        console.log(JSON.stringify(toReport));
                         queue.push({
                             toReport: toReport,
                             lastReported: guest.positionsWater.find(pos => pos.id == toReport.previous),
