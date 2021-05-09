@@ -509,18 +509,22 @@ const sendEmailHandler = (msg) => {
                         type: 'water'
                     });
                 } else if(type === 'all') {
-                    let toReport = guest.positionsWater.find(pos => pos.id == positionId);
-                    queue.push({
-                        toReport: toReport,
-                        lastReported: guest.positionsWater.find(pos => pos.id == toReport.previous),
-                        type: 'water'
-                    });
-                    toReport = guest.positions.find(pos => pos.id == positionId);
-                    queue.push({
-                        toReport: toReport,
-                        lastReported: guest.positions.find(pos => pos.id == toReport.previous),
-                        type: 'electricity'
-                    });
+                    if(guest.positionsWater.length() > 0) {
+                        let toReport = guest.positionsWater.find(pos => pos.id == positionId);
+                        queue.push({
+                            toReport: toReport,
+                            lastReported: guest.positionsWater.find(pos => pos.id == toReport.previous),
+                            type: 'water'
+                        });
+                    }
+                    if(guest.positions.length() > 0) {
+                        let toReport = guest.positions.find(pos => pos.id == positionId);
+                        queue.push({
+                            toReport: toReport,
+                            lastReported: guest.positions.find(pos => pos.id == toReport.previous),
+                            type: 'electricity'
+                        });
+                    }
                 }
 
                 queue.forEach(payload => {
