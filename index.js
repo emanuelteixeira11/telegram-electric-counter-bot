@@ -511,7 +511,7 @@ const sendEmailHandler = (msg) => {
                         type: 'water'
                     });
                 } else if(type === 'all') {
-                    if(guest.positionsWater !== undefined && uest.positionsWater.length > 0) {
+                    if(guest.positionsWater !== undefined && guest.positionsWater.length > 0) {
                         let toReport = guest.positionsWater.find(pos => pos.id == positionId);
                         queue.push({
                             toReport: toReport,
