@@ -512,6 +512,7 @@ const sendEmailHandler = (msg) => {
                     });
                 } else if(type === 'all') {
                     if(guest.positionsWater !== undefined && guest.positionsWater.length > 0) {
+                        console.log(JSON.stringify(guest));
                         let toReport = guest.positionsWater.find(pos => pos.id == positionId);
                         queue.push({
                             toReport: toReport,
