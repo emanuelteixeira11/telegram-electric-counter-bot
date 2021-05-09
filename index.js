@@ -359,7 +359,7 @@ const addWaterPositionHandler = (msg) => {
                     bot.onReplyToMessage(sent.chat.id, sent.message_id, (msg) => {
                         let updatedPosition = Number(msg.text);
                         if (!isNaN(updatedPosition)) {
-                            if (updatedPosition > apartment.currentWaterPosition.m3) {
+                            if (updatedPosition > apartment.currentPosition.m3) {
                                 let diff = updatedPosition - apartment.currentPosition.m3;
                                 let totalAmount = Math.round(diff * apartment.price.m3).toFixed(2);
                                 let startDate = apartment.changedAt;
@@ -367,7 +367,7 @@ const addWaterPositionHandler = (msg) => {
 
                                 pushGuestWaterPosition(guestId, {
                                     currentPosition: updatedPosition,
-                                    lastPosition: apartment.currentWaterPosition.m3,
+                                    lastPosition: apartment.currentPosition.m3,
                                     price: apartment.price.m3,
                                     totalAmount: totalAmount,
                                     total: diff,
