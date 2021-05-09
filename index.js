@@ -186,7 +186,8 @@ const apartmentsInfoHandler = (msg) => {
                         .forEach((key) => {
                             let apartment = apartments[key];
                             textMsg += `_${apartment.description}_\n`;
-                            textMsg += escapeMarkDown(`Ultima contagem: ${apartment.currentPosition.lastUpdate.kWh} kWh (${apartment.currentPosition.lastUpdate.amount}€)`) + '\n';
+                            textMsg += escapeMarkDown(`Ultima contagem Luz: ${apartment.currentPosition.lastUpdate.electricity.current} kWh (${apartment.currentPosition.lastUpdate.electricity.amount}€)`) + '\n';
+                            textMsg += escapeMarkDown(`Ultima contagem Agua: ${apartment.currentPosition.lastUpdate.water.current} M3 (${apartment.currentPosition.lastUpdate.water.amount}€)`) + '\n';
                             textMsg += escapeMarkDown(`Data da ultima contagem: ${moment(apartment.changedAt).format('YYYY-MM-DD')}\n`);
                             if (guestsMap.has(key)) {
                                 let guest = guestsMap.get(key);
