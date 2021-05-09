@@ -518,7 +518,6 @@ const sendEmailHandler = (msg) => {
                 }
 
                 queue.forEach(payload => {
-                    console.log(JSON.stringify(payload));
                     guest.apartment = apartment;
                     guest.toReport = payload.toReport;
                     guest.lastReported = payload.lastReported;
@@ -542,6 +541,8 @@ const sendEmailHandler = (msg) => {
                 guestsMap.forEach((guest) => {
                     promises.push(getLatestGuestPositionById(guest.id, 1));                
                 });
+
+                console.log(JSON.stringify(guests));
 
                 Promise.all(promises).then(guests => {
                     guests.forEach(guest => {
