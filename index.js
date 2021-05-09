@@ -515,7 +515,10 @@ const sendEmailHandler = (msg) => {
                     });
                 }
 
+
+
                 queue.forEach(payload => {
+                    console.log(JSON.stringify(payload));
                     guest.apartment = apartment;
                     guest.toReport = payload.toReport;
                     guest.lastReported = payload.lastReported;
