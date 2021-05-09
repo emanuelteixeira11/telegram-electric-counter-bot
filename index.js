@@ -510,23 +510,6 @@ const sendEmailHandler = (msg) => {
                         lastReported: guest.positionsWater.find(pos => pos.id == toReport.previous),
                         type: 'water'
                     });
-                } else if(type === 'all') {
-                    if(guest.positionsWater !== undefined && guest.positionsWater.length > 0) {
-                        let toReport = guest.positionsWater.find(pos => pos.id == positionId);
-                        queue.push({
-                            toReport: toReport,
-                            lastReported: guest.positionsWater.find(pos => pos.id == toReport.previous),
-                            type: 'water'
-                        });
-                    }
-                    if(guest.positions !== undefined && guest.positions.length > 0) {
-                        let toReport = guest.positions.find(pos => pos.id == positionId);
-                        queue.push({
-                            toReport: toReport,
-                            lastReported: guest.positions.find(pos => pos.id == toReport.previous),
-                            type: 'electricity'
-                        });
-                    }
                 }
 
                 queue.forEach(payload => {
@@ -561,7 +544,7 @@ const sendEmailHandler = (msg) => {
                         if(guest.positions.length > 0) {
                             let position = guest.positions[0].id;
                             aux.push({
-                                text: `${guest.name} : Luz`,
+                                text: `Luz: ${guest.name}`,
                                 callback_data: `/send_email guest:${guest.id} position:${position} type:electricity`
                             })
                         }
@@ -569,7 +552,7 @@ const sendEmailHandler = (msg) => {
                         if(guest.positionsWater.length > 0) {
                             let position = guest.positionsWater[0].id;
                             aux.push({
-                                text: `${guest.name} : Agua`,
+                                text: `Agua: ${guest.name}`,
                                 callback_data: `/send_email guest:${guest.id} position:${position} type:water`
                             })
                         }
