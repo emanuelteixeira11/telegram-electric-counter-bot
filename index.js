@@ -546,8 +546,6 @@ const sendEmailHandler = (msg) => {
                     promises.push(getLatestGuestPositionById(guest.id, 1));                
                 });
 
-                console.log(JSON.stringify(guests));
-
                 Promise.all(promises).then(guests => {
                     guests.forEach(guest => {
                         let position = guest.positions[0].id;
