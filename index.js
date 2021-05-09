@@ -237,31 +237,30 @@ const addPositionHandler = (msg) => {
                                 let endDate = moment.now();
 
                                 pushGuestPosition(guestId, {
-                                    currentKWhPosition: updatedPosition,
-                                    lastKWhPosition: apartment.currentPosition.kWh,
+                                    currentPosition: updatedPosition,
+                                    lastPosition: apartment.currentPosition.kWh,
                                     price: apartment.price,
                                     totalAmount: totalAmount,
-                                    totalKWh: diff,
+                                    total: diff,
                                     createdAt: endDate,
                                     createdBy: {
                                         userId: sent.chat.id,
                                         userName: sent.chat.username
                                     },
-                                    previous: apartment.currentPosition.lastUpdate.positionId
+                                    previous: apartment.currentPosition.lastUpdate.electricity.positionId
                                 }).then(positionKey => {
-                                    apartment.currentPosition = {
-                                        lastUpdate: {
-                                            guestId: guestId,
-                                            positionId: positionKey,
-                                            amount: totalAmount,
-                                            kWh: diff,
-                                        },
-                                        kWh: updatedPosition,
+                                    apartment.currentPosition.lastUpdate.electricity = {
+                                        guestId: guestId,
+                                        positionId: positionKey,
+                                        amount: totalAmount,
+                                        kWh: diff,
                                     };
+                                    apartment.currentPosition.kWh = updatedPosition;
                                     apartment.changedAt = endDate;
                                     apartment.changedBy = {
                                         userId: sent.chat.id,
-                                        userName: sent.chat.username
+                                        userName: sent.chat.username,
+                                        action: 'new_entry_electricity'
                                     };
 
                                     setApartmentById(guest.apartment, apartment).then(() => {
@@ -281,7 +280,7 @@ const addPositionHandler = (msg) => {
                                                     [
                                                         {
                                                             text: 'sim 👌',
-                                                            callback_data: `/send_email guest:${guestId} position:${positionKey}`
+                                                            callback_data: `/send_email guest:${guestId} position:${positionKey} type:electricity`
                                                         },
                                                         {
                                                             text: 'não 👎',
