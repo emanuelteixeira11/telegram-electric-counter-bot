@@ -74,7 +74,7 @@ resolveWaterTemplate = (guest) => {
     <table style="width:100%">
         <tr>
             <th>Contador (M3)</th>
-            <th>Contagem do Mês (kWh)</th>
+            <th>Contagem do Mês (M3)</th>
             <th>Total (€)</th>
             <th>Data da Contagem (€)</th>
         </tr>

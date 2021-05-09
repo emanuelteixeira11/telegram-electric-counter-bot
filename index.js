@@ -349,7 +349,7 @@ const addWaterPositionHandler = (msg) => {
 
             getApartmentById(guest.apartment).then(apartment => {
                 let textMsg = `Enviar a contagem de agua para o *${apartment.description}* do *${guest.name}*\\:\n`;
-                textMsg += `Contagem atual: ${apartment.currentWaterPosition.m3} m3\n\n`;
+                textMsg += `Contagem atual: ${apartment.currentPosition.m3} m3\n\n`;
                 bot.sendMessage(msg.from.id, textMsg, {
                     parse_mode: "MarkdownV2",
                     reply_markup: {
