@@ -488,34 +488,34 @@ const sendEmailHandler = (msg) => {
         getLatestGuestPositionById(guestId, 10).then((guest) => {
             getApartmentById(guest.apartment).then((apartment) => {
                 let queue = [];
-                let lastReported = [];
-
                 if(type === 'electricity') {
+                    let toReport = guest.positions.find(pos => pos.id == positionId);
                     queue.push({
-                        toReport: guest.positions.find(pos => pos.id == positionId),
+                        toReport: toReport,
                         lastReported: guest.positions.find(pos => pos.id == toReport.previous),
                         type: 'electricity'
                     });
                 } else if(type === 'water') {
+                    let toReport = guest.positionsWater.find(pos => pos.id == positionId);
                     queue.push({
-                        toReport: guest.positionsWater.find(pos => pos.id == positionId),
+                        toReport: toReport,
                         lastReported: guest.positionsWater.find(pos => pos.id == toReport.previous),
                         type: 'water'
                     });
                 } else if(type === 'all') {
+                    let toReport = guest.positionsWater.find(pos => pos.id == positionId);
                     queue.push({
-                        toReport: guest.positionsWater.find(pos => pos.id == positionId),
+                        toReport: toReport,
                         lastReported: guest.positionsWater.find(pos => pos.id == toReport.previous),
                         type: 'water'
                     });
+                    toReport = guest.positions.find(pos => pos.id == positionId);
                     queue.push({
-                        toReport: guest.positions.find(pos => pos.id == positionId),
+                        toReport: toReport,
                         lastReported: guest.positions.find(pos => pos.id == toReport.previous),
                         type: 'electricity'
                     });
                 }
-
-
 
                 queue.forEach(payload => {
                     console.log(JSON.stringify(payload));
