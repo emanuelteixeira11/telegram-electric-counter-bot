@@ -66,7 +66,7 @@ resolveWaterTemplate = (guest) => {
     let month = moment(guest.toReport.createdAt).format('MMMM');
     let subject = `Contagem de Agua - ${guest.name} - ${month}`;
     let bodyHTML = `<p>Boa tarde ${guest.name},</p>
-    <p>Segue abaixo a contagem da Luz para o mês de ${month} (de ${moment(guest.lastReported.createdAt).format('YYYY-MM-DD')} a ${moment(guest.toReport.createdAt).format('YYYY-MM-DD')}).</p>
+    <p>Segue abaixo a contagem da Agua para o mês de ${month} (de ${moment(guest.lastReported.createdAt).format('YYYY-MM-DD')} a ${moment(guest.toReport.createdAt).format('YYYY-MM-DD')}).</p>
     <p>Foram registados <strong>${guest.toReport.total} M3</strong> no valor de <strong>${guest.toReport.totalAmount}€</strong>.</p>
     <p>Qualquer duvida está a vontade.</p>
 
