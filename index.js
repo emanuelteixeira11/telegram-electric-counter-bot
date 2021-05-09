@@ -487,33 +487,46 @@ const sendEmailHandler = (msg) => {
 
         getLatestGuestPositionById(guestId, 10).then((guest) => {
             getApartmentById(guest.apartment).then((apartment) => {
+                let queue = [];
+                let lastReported = [];
+
                 if(type === 'electricity') {
-                    let toReport = guest.positions.find(pos => pos.id == positionId);
-                    let lastReported = guest.positions.find(pos => pos.id == toReport.previous);
-                    guest.apartment = apartment;
-                    guest.toReport = toReport;
-                    guest.lastReported = lastReported;
-                    email.sendMonthlyPositionEmail(guest, type).then((resp) => {
-                        console.log(`email sent sucessfully!`);
-                        bot.sendMessage(msg.message.chat.id, 'Email enviado com sucesso 😎', { parse_mode: 'Markdown', reply_to_message_id: msg.message.message_id });
-                    }).catch(error => {
-                        console.error(`error sending email: ${JSON.stringify(error)}`);
-                        bot.sendMessage(msg.message.chat.id, 'Erro ao enviar o email 🤕', { parse_mode: 'Markdown', reply_to_message_id: msg.message.message_id });
+                    queue.push({
+                        toReport: guest.positions.find(pos => pos.id == positionId),
+                        lastReported: guest.positions.find(pos => pos.id == toReport.previous),
+                        type: 'electricity'
                     });
                 } else if(type === 'water') {
-                    let toReport = guest.positionsWater.find(pos => pos.id == positionId);
-                    let lastReported = guest.positionsWater.find(pos => pos.id == toReport.previous);
+                    queue.push({
+                        toReport: guest.positionsWater.find(pos => pos.id == positionId),
+                        lastReported: guest.positionsWater.find(pos => pos.id == toReport.previous),
+                        type: 'water'
+                    });
+                } else if(type === 'all') {
+                    queue.push({
+                        toReport: guest.positionsWater.find(pos => pos.id == positionId),
+                        lastReported: guest.positionsWater.find(pos => pos.id == toReport.previous),
+                        type: 'water'
+                    });
+                    queue.push({
+                        toReport: guest.positions.find(pos => pos.id == positionId),
+                        lastReported: guest.positions.find(pos => pos.id == toReport.previous),
+                        type: 'electricity'
+                    });
+                }
+
+                queue.forEach(payload => {
                     guest.apartment = apartment;
-                    guest.toReport = toReport;
-                    guest.lastReported = lastReported;
-                    email.sendMonthlyPositionEmail(guest, type).then((resp) => {
+                    guest.toReport = payload.toReport;
+                    guest.lastReported = payload.lastReported;
+                    email.sendMonthlyPositionEmail(guest, payload.type).then((resp) => {
                         console.log(`email sent sucessfully!`);
                         bot.sendMessage(msg.message.chat.id, 'Email enviado com sucesso 😎', { parse_mode: 'Markdown', reply_to_message_id: msg.message.message_id });
                     }).catch(error => {
                         console.error(`error sending email: ${JSON.stringify(error)}`);
                         bot.sendMessage(msg.message.chat.id, 'Erro ao enviar o email 🤕', { parse_mode: 'Markdown', reply_to_message_id: msg.message.message_id });
                     });
-                }
+                });
             });
         });
     } else if(msg.data.match(/\/resend\_email/) !== null){
@@ -532,7 +545,7 @@ const sendEmailHandler = (msg) => {
                         let position = guest.positions[0].id;
                         inline_keyboard.push([{
                             text: guest.name,
-                            callback_data: `/send_email guest:${guest.id} position:${position}`
+                            callback_data: `/send_email guest:${guest.id} position:${position} type:all`
                         }]);
                     })
 
