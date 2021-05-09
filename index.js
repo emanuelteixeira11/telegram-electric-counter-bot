@@ -511,7 +511,7 @@ const sendEmailHandler = (msg) => {
                         type: 'water'
                     });
                 } else if(type === 'all') {
-                    if(guest.positionsWater.length() > 0) {
+                    if(guest.positionsWater.length > 0) {
                         let toReport = guest.positionsWater.find(pos => pos.id == positionId);
                         queue.push({
                             toReport: toReport,
@@ -519,7 +519,7 @@ const sendEmailHandler = (msg) => {
                             type: 'water'
                         });
                     }
-                    if(guest.positions.length() > 0) {
+                    if(guest.positions.length > 0) {
                         let toReport = guest.positions.find(pos => pos.id == positionId);
                         queue.push({
                             toReport: toReport,
