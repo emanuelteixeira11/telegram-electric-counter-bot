@@ -360,7 +360,7 @@ const addWaterPositionHandler = (msg) => {
                         let updatedPosition = Number(msg.text);
                         if (!isNaN(updatedPosition)) {
                             if (updatedPosition > apartment.currentWaterPosition.m3) {
-                                let diff = updatedPosition - apartment.currentWaterPosition.m3;
+                                let diff = updatedPosition - apartment.currentPosition.m3;
                                 let totalAmount = Math.round(diff * apartment.price.m3).toFixed(2);
                                 let startDate = apartment.changedAt;
                                 let endDate = moment.now();
@@ -378,14 +378,13 @@ const addWaterPositionHandler = (msg) => {
                                     },
                                     previous: apartment.currentWaterPosition.lastUpdate != undefined ? apartment.currentWaterPosition.lastUpdate.positionId : null
                                 }).then(positionKey => {
-                                    apartment.currentPosition.lastUpdate = {
-                                        water : {
-                                            guestId: guestId,
-                                            positionId: positionKey,
-                                            amount: totalAmount,
-                                            m3: diff,
-                                            totalM3: updatedPosition
-                                        }
+                                    apartment.currentPosition.m3 = updatedPosition;
+                                    apartment.currentPosition.lastUpdate.water = {
+                                        guestId: guestId,
+                                        positionId: positionKey,
+                                        amount: totalAmount,
+                                        current: diff,
+                                        total: updatedPosition
                                     };
                                     apartment.changedAt = endDate;
                                     apartment.changedBy = {
