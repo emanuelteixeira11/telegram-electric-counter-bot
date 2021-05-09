@@ -31,7 +31,7 @@ resolveElectricityTemplate = (guest) => {
     let subject = `Contagem de Luz - ${guest.name} - ${month}`;
     let bodyHTML = `<p>Boa tarde ${guest.name},</p>
     <p>Segue abaixo a contagem da Luz para o mês de ${month} (de ${moment(guest.lastReported.createdAt).format('YYYY-MM-DD')} a ${moment(guest.toReport.createdAt).format('YYYY-MM-DD')}).</p>
-    <p>Foram registados <strong>${guest.toReport.totalKWh} kWh</strong> no valor de <strong>${guest.toReport.totalAmount}€</strong>.</p>
+    <p>Foram registados <strong>${guest.toReport.total} kWh</strong> no valor de <strong>${guest.toReport.totalAmount}€</strong>.</p>
     <p>Qualquer duvida está a vontade.</p>
 
     <h4>Ultimos ${guest.positions.length} consumos:</h4>
