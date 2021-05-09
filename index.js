@@ -240,8 +240,8 @@ const addPositionHandler = (msg) => {
                         let updatedPosition = Number(msg.text);
                         if (!isNaN(updatedPosition)) {
                             if (updatedPosition > apartment.currentPosition.kWh) {
-                                let diff = updatedPosition - apartment.currentPosition.kWh;
-                                let totalAmount = Math.round(diff * apartment.price.kWh).toFixed(2);
+                                let diff = updatedPosition - Number(apartment.currentPosition.kWh);
+                                let totalAmount = Number(diff * apartment.price.kWh).toFixed(2);
                                 let startDate = apartment.changedAt;
                                 let endDate = moment.now();
 
@@ -370,7 +370,7 @@ const addWaterPositionHandler = (msg) => {
                         if (!isNaN(updatedPosition)) {
                             if (updatedPosition > apartment.currentPosition.m3) {
                                 let diff = updatedPosition - Number(apartment.currentPosition.m3);
-                                let totalAmount = Math.round(diff * apartment.price.m3).toFixed(2);
+                                let totalAmount = Number(diff * apartment.price.m3).toFixed(2);
                                 let startDate = apartment.changedAt;
                                 let endDate = moment.now();
 
